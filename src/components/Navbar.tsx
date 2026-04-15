@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 
 export default function Navbar() {
-  const { cart, isAuthenticated, logout } = useStore();
+  const { cart } = useStore();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -39,18 +39,6 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-
-            {isAuthenticated ? (
-              <button onClick={logout} className="flex items-center gap-2 text-gray-700 hover:text-purple-600">
-                <LogOut size={20} />
-                <span className="hidden md:inline">Salir</span>
-              </button>
-            ) : (
-              <Link to="/login" className="flex items-center gap-2 text-gray-700 hover:text-purple-600">
-                <User size={20} />
-                <span className="hidden md:inline">Iniciar Sesión</span>
-              </Link>
-            )}
 
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2">
               {isOpen ? <X size={24} /> : <Menu size={24} />}

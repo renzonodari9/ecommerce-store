@@ -1,4 +1,4 @@
-const API_URL = '';
+const API_URL = 'https://ecommerce-api-qw3j.onrender.com';
 
 class ApiService {
   private token: string | null = null;
