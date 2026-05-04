@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useStore } from '../context/StoreContext';
 import { CheckCircle, CreditCard } from 'lucide-react';
-import api from '../services/api';
 
 export default function Checkout() {
   const { cart, isAuthenticated, clearCart } = useStore();
@@ -20,22 +19,32 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Debes iniciar sesión</h1>
-        <Link to="/login" className="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold">
-          Iniciar Sesión
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50">
+        <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Debes iniciar sesión</h1>
+          <Link 
+            to="/login" 
+            className="inline-block bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition-all hover:shadow-lg"
+          >
+            Iniciar Sesión
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío</h1>
-        <Link to="/" className="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold">
-          Ver Productos
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50">
+        <div className="bg-white p-8 rounded-2xl shadow-sm text-center max-w-md">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío</h1>
+          <Link 
+            to="/" 
+            className="inline-block bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition-all hover:shadow-lg"
+          >
+            Ver Productos
+          </Link>
+        </div>
       </div>
     );
   }
@@ -45,8 +54,10 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      const data: any = await api.createOrder(formData);
-      setOrderNumber(data.orderNumber);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const randomOrderNum = 'ORD-' + Date.now().toString().slice(-8);
+      setOrderNumber(randomOrderNum);
       setOrderComplete(true);
       await clearCart();
     } catch (error) {
@@ -58,13 +69,20 @@ export default function Checkout() {
 
   if (orderComplete) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="text-center">
-          <CheckCircle size={80} className="text-green-500 mx-auto mb-6" />
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50">
+        <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm text-center max-w-lg animate-scale-in">
+          <div className="w-20 h-20 md:w-24 md:h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle size={48} className="text-green-500" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">¡Pedido Confirmado!</h1>
-          <p className="text-gray-600 mb-4">Número de pedido: <span className="font-mono font-bold">{orderNumber}</span></p>
+          <p className="text-gray-600 mb-2">
+            Número de pedido: <span className="font-mono font-bold text-purple-600">{orderNumber}</span>
+          </p>
           <p className="text-gray-500 mb-8">Recibirás un email con los detalles de tu pedido.</p>
-          <Link to="/" className="bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700">
+          <Link 
+            to="/" 
+            className="inline-block bg-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-700 transition-all hover:shadow-lg hover:-translate-y-1"
+          >
             Continuar Comprando
           </Link>
         </div>
@@ -78,55 +96,57 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Finalizar Compra</h1>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-8">Finalizar Compra</h1>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                <CreditCard size={20} />
+          <div className="order-2 md:order-1">
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 mb-6">
+              <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <CreditCard size={20} className="text-purple-600" />
                 Información de Pago
               </h2>
-              <div className="bg-gray-100 rounded-lg p-4 text-center text-gray-600">
-                <p>Procesamiento con Stripe</p>
-                <p className="text-sm mt-1">Tarjeta de prueba: 4242 4242 4242 4242</p>
+              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-100">
+                <p className="text-center text-gray-700 font-medium">Procesamiento con Stripe</p>
+                <p className="text-center text-sm mt-2 text-gray-500">
+                  Tarjeta de prueba: <span className="font-mono font-bold">4242 4242 4242 4242</span>
+                </p>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Dirección de Envío</h2>
+            <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100">
+              <h2 className="text-xl font-semibold mb-6">Dirección de Envío</h2>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Calle</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Calle</label>
                   <input
                     type="text"
                     value={formData.street}
                     onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600 outline-none"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Ciudad</label>
                     <input
                       type="text"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600 outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Provincia</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Provincia</label>
                     <input
                       type="text"
                       value={formData.state}
                       onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600 outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                       required
                     />
                   </div>
@@ -134,22 +154,22 @@ export default function Checkout() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Código Postal</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Código Postal</label>
                     <input
                       type="text"
                       value={formData.zipCode}
                       onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600 outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">País</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">País</label>
                     <input
                       type="text"
                       value={formData.country}
                       onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-600 outline-none"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                       required
                     />
                   </div>
@@ -158,28 +178,37 @@ export default function Checkout() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-purple-600 text-white py-4 rounded-xl font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 mt-6"
+                  className="w-full bg-purple-600 text-white py-4 rounded-xl font-semibold hover:bg-purple-700 transition-all disabled:opacity-50 mt-6 text-lg hover:shadow-xl hover:-translate-y-0.5"
                 >
-                  {loading ? 'Procesando...' : `Pagar $${total.toFixed(2)}`}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Procesando...
+                    </span>
+                  ) : (
+                    `Pagar $${total.toFixed(2)}`
+                  )}
                 </button>
               </div>
             </form>
           </div>
 
-          <div>
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Resumen del Pedido</h2>
+          <div className="order-1 md:order-2">
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 sticky top-24">
+              <h2 className="text-xl font-semibold mb-6">Resumen del Pedido</h2>
 
-              <div className="space-y-3 mb-6">
+              <div className="space-y-4 mb-6">
                 {cart.items.map((item) => (
-                  <div key={item.id} className="flex justify-between">
-                    <span className="text-gray-600">{item.product.name} x {item.quantity}</span>
+                  <div key={item.id} className="flex justify-between items-center">
+                    <span className="text-gray-600 text-sm">
+                      {item.product.name} x {item.quantity}
+                    </span>
                     <span className="font-semibold">${(item.product.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t pt-4 space-y-2">
+              <div className="border-t pt-4 space-y-3">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span>${cart.subtotal.toFixed(2)}</span>
@@ -192,7 +221,7 @@ export default function Checkout() {
                   <span>IVA (21%)</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-xl font-bold pt-2 border-t">
+                <div className="flex justify-between text-xl font-bold pt-3 border-t">
                   <span>Total</span>
                   <span className="text-purple-600">${total.toFixed(2)}</span>
                 </div>

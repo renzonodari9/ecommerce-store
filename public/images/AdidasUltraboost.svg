@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f5f7"/>
+  <ellipse cx="200" cy="320" rx="90" ry="20" fill="#e0e0e0"/>
+  <path d="M 110 300 Q 110 170 200 150 Q 290 140 290 300 Z" fill="#black"/>
+  <path d="M 120 300 Q 120 190 200 170 Q 280 160 280 300 Z" fill="#1a1a1a"/>
+  <ellipse cx="200" cy="310" rx="45" ry="15" fill="#2d2d2d"/>
+  <ellipse cx="200" cy="310" rx="35" ry="10" fill="#3d3d3d"/>
+  <path d="M 165 308 Q 200 303 235 308" fill="none" stroke="#666" stroke-width="2"/>
+  <text x="200" y="370" font-family="Arial" font-size="14" fill="#86868b" text-anchor="middle">Adidas Ultraboost</text>
+</svg>

@@ -1,4 +1,10 @@
-const API_URL = 'https://ecommerce-api-qw3j.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'https://ecommerce-api-qw3j.onrender.com';
+
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data?: T;
+}
 
 class ApiService {
   private token: string | null = null;
@@ -34,7 +40,7 @@ class ApiService {
       headers,
     });
 
-    const data = await response.json();
+    const data: ApiResponse<T> = await response.json();
 
     if (!response.ok || !data.success) {
       throw new Error(data.message || 'Request failed');
@@ -63,6 +69,10 @@ class ApiService {
 
   logout() {
     this.setToken(null);
+  }
+
+  async getProfile() {
+    return this.request('/auth/profile', { method: 'GET' });
   }
 
   async getProducts(params?: string) {

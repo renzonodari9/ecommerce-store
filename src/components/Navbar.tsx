@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 
 export default function Navbar() {
-  const { cart } = useStore();
+  const { cart, isAuthenticated, logout } = useStore();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -40,6 +44,26 @@ export default function Navbar() {
               )}
             </Link>
 
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="hidden md:flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors"
+                title="Cerrar sesión"
+              >
+                <LogOut size={20} />
+              </button>
+            )}
+
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                className="hidden md:flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors"
+              >
+                <User size={20} />
+                <span className="text-sm">Iniciar Sesión</span>
+              </Link>
+            )}
+
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden p-2">
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -54,6 +78,20 @@ export default function Navbar() {
             <Link to="/?category=electronics" className="block py-2 text-gray-700">Electrónica</Link>
             <Link to="/?category=clothing" className="block py-2 text-gray-700">Ropa</Link>
             <Link to="/?category=accessories" className="block py-2 text-gray-700">Accesorios</Link>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 py-2 text-red-600 w-full"
+              >
+                <LogOut size={20} />
+                Cerrar Sesión
+              </button>
+            ) : (
+              <Link to="/login" className="flex items-center gap-2 py-2 text-gray-700">
+                <User size={20} />
+                Iniciar Sesión
+              </Link>
+            )}
           </div>
         </div>
       )}

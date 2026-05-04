@@ -2,20 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, Check } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
-import api from '../services/api';
-
-interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: number;
-  comparePrice?: number;
-  images: string[];
-  stock: number;
-  sku: string;
-  category: { name: string };
-}
+import { mockProducts, type Product } from '../data/products';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -30,15 +17,14 @@ export default function ProductDetail() {
     loadProduct();
   }, [slug]);
 
-  const loadProduct = async () => {
-    try {
-      const data: any = await api.getProductBySlug(slug!);
-      setProduct(data);
-    } catch (error) {
+  const loadProduct = () => {
+    const found = mockProducts.find(p => p.slug === slug);
+    if (found) {
+      setProduct(found);
+    } else {
       navigate('/');
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleAddToCart = async () => {
@@ -70,65 +56,78 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-purple-600 mb-6"
+          className="flex items-center gap-2 text-gray-600 hover:text-purple-600 mb-6 transition-colors"
         >
           <ArrowLeft size={20} />
-          Volver
+          <span className="font-medium">Volver</span>
         </button>
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
             <img
-              src={product.images?.[0] || 'https://via.placeholder.com/600'}
+              src={product.images[0]}
               alt={product.name}
-              className="w-full aspect-square object-cover"
+              className="w-full aspect-square object-cover md:aspect-auto md:h-full"
             />
           </div>
 
-          <div>
-            <span className="text-sm text-purple-600 font-medium uppercase tracking-wide">
+          <div className="py-4">
+            <span className="text-sm text-purple-600 font-semibold uppercase tracking-wider">
               {product.category?.name}
             </span>
-            <h1 className="text-3xl font-bold text-gray-900 mt-2 mb-4">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-4">
+              {product.name}
+            </h1>
 
             <div className="flex items-center gap-4 mb-6">
-              <span className="text-4xl font-bold text-purple-600">${product.price.toFixed(2)}</span>
+              <span className="text-4xl md:text-5xl font-bold text-purple-600">
+                ${product.price.toFixed(2)}
+              </span>
               {product.comparePrice && (
-                <span className="text-xl text-gray-400 line-through">${product.comparePrice.toFixed(2)}</span>
+                <span className="text-xl md:text-2xl text-gray-400 line-through">
+                  ${product.comparePrice.toFixed(2)}
+                </span>
               )}
             </div>
 
-            <p className="text-gray-600 mb-6 leading-relaxed">{product.description}</p>
+            <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+              {product.description}
+            </p>
 
             <div className="flex items-center gap-4 mb-6">
               {product.stock > 0 ? (
-                <span className="flex items-center gap-2 text-green-600">
+                <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-full">
                   <Check size={18} />
-                  En stock ({product.stock} disponibles)
-                </span>
+                  <span className="font-medium">En stock ({product.stock} disponibles)</span>
+                </div>
               ) : (
-                <span className="text-red-600 font-medium">Agotado</span>
+                <div className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full">
+                  <X size={18} />
+                  <span className="font-medium">Agotado</span>
+                </div>
               )}
             </div>
 
-            <p className="text-sm text-gray-500 mb-6">SKU: {product.sku}</p>
+            <p className="text-sm text-gray-500 mb-6">SKU: {product.id}</p>
 
             {product.stock > 0 && (
-              <div className="flex items-center gap-4 mb-8">
-                <div className="flex items-center border rounded-lg">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-8">
+                <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-4 py-2 text-gray-600 hover:bg-gray-100"
+                    className="px-6 py-3 text-gray-600 hover:bg-gray-100 transition-colors font-bold text-lg"
                   >
                     -
                   </button>
-                  <span className="px-4 py-2 border-x">{quantity}</span>
+                  <span className="px-8 py-3 border-x-2 border-gray-200 font-bold text-lg min-w-[60px] text-center">
+                    {quantity}
+                  </span>
                   <button
                     onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                    className="px-4 py-2 text-gray-600 hover:bg-gray-100"
+                    className="px-6 py-3 text-gray-600 hover:bg-gray-100 transition-colors font-bold text-lg"
                   >
                     +
                   </button>
@@ -136,32 +135,38 @@ export default function ProductDetail() {
 
                 <button
                   onClick={handleAddToCart}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-colors ${
+                  className={`flex-1 flex items-center justify-center gap-3 py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300 ${
                     added
-                      ? 'bg-green-600 text-white'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                      ? 'bg-green-600 text-white shadow-lg shadow-green-200'
+                      : 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-xl hover:shadow-purple-200'
                   }`}
                 >
-                  <ShoppingCart size={20} />
+                  <ShoppingCart size={24} />
                   {added ? '¡Agregado!' : 'Agregar al Carrito'}
                 </button>
               </div>
             )}
 
-            <div className="bg-purple-50 rounded-xl p-6">
-              <h3 className="font-semibold mb-3">Política de envío</h3>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  Envío gratis en pedidos mayores a $100
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-100">
+              <h3 className="font-bold mb-4 text-lg">Política de envío</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check size={16} className="text-green-600" />
+                  </div>
+                  <span>Envío gratis en pedidos mayores a $100</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  Entrega en 3-5 días hábiles
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check size={16} className="text-green-600" />
+                  </div>
+                  <span>Entrega en 3-5 días hábiles</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check size={16} className="text-green-600" />
-                  Devoluciones gratuitas en 30 días
+                <li className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Check size={16} className="text-green-600" />
+                  </div>
+                  <span>Devoluciones gratuitas en 30 días</span>
                 </li>
               </ul>
             </div>

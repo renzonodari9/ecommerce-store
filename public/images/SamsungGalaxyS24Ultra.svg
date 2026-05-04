@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f0f0f0"/>
+  <rect x="70" y="35" width="260" height="330" rx="35" fill="#1a1a2e"/>
+  <rect x="80" y="45" width="240" height="310" rx="6" fill="#000"/>
+  <rect x="170" y="28" width="60" height="18" rx="9" fill="#1a1a2e"/>
+  <circle cx="190" cy="37" r="5" fill="#333"/>
+  <circle cx="210" cy="37" r="5" fill="#333"/>
+  <text x="200" y="380" font-family="Arial" font-size="14" fill="#86868b" text-anchor="middle">Samsung Galaxy S24 Ultra</text>
+</svg>
